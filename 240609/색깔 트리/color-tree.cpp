@@ -13,16 +13,17 @@ struct NODE {
 int Q;
 vector <NODE*> root;
 vector <int> root_id;
-NODE node[100001];
+NODE node[100005];
 int sum;
 
 bool chk_add(int pid) {
 	NODE* par_node = &node[pid];
 	int cur_depth = 2;
-	while (par_node->pid != -1) {
+	while (1) {
 		if (par_node->max_depth < cur_depth) {
 			return false;
 		}
+		if (par_node->pid == -1) break;
 		par_node = &node[par_node->pid];
 		cur_depth++;
 	}
