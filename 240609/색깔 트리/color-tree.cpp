@@ -59,23 +59,20 @@ void change_color(int mid, int color) {
 pii get_color(int mid) {
 	NODE* cur_node = &node[mid];
 	if (cur_node->pid == -1) {
-		return { cur_node->color,0 };
+		return{ cur_node->color,0 };
 	}
 	pii par_info = get_color(cur_node->pid);
 	if (cur_node->update_sec > par_info.second) return{ cur_node->color,cur_node->update_sec };
 	else return par_info;
 }
 
-int dfs(int mid) {
+int dfs(int mid, int color, int update_sec) {
 	NODE* cur_node = &node[mid];
-	if (cur_node->pid != -1) {
-		NODE* par_node = &node[cur_node->pid];
-		pii par_info = { par_node->color, par_node->update_sec };
-		if (cur_node->update_sec < par_info.second) {
-			cur_node->color = par_node->color;
-			cur_node->update_sec = par_node->update_sec;
-		}
+	if (cur_node->update_sec < update_sec) {
+		cur_node->color = color;
+		cur_node->update_sec = update_sec;
 	}
+
 	int chk = 1 << cur_node->color;
 
 	if (cur_node->cid.size() == 0) {
@@ -84,7 +81,7 @@ int dfs(int mid) {
 	}
 
 	for (auto i : cur_node->cid) {
-		chk |= dfs(i);
+		chk |= dfs(i, cur_node->color, cur_node->update_sec);
 	}
 	int color_cnt = 0;
 	for (int i = 1; i <= 5; i++) {
@@ -122,7 +119,7 @@ int main() {
 		case 400:
 			sum = 0;
 			for (auto i : root_id) {
-				dfs(i);
+				dfs(i, 0, 0);
 			}
 			cout << sum << "\n";
 			break;
