@@ -24,6 +24,7 @@ bool chk_add(int pid) {
 			return false;
 		}
 		par_node = &node[par_node->pid];
+		cur_depth++;
 	}
 	return true;
 }
