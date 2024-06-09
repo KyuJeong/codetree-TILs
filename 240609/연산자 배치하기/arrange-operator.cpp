@@ -4,7 +4,7 @@ using namespace std;
 
 int n, k;
 vector <int> v, seq;
-int op[4];
+int op[3];
 int _max = -1e9;
 int _min = 1e9;
 
@@ -19,7 +19,7 @@ int main() {
 		v.push_back(k);
 	}
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 3; i++) {
 		cin >> k;
 		for (int j = 0; j < k; j++)
 			seq.push_back(i);
@@ -37,8 +37,6 @@ int main() {
 			else if (seq[i] == 2) {
 				sum *= v[i + 1];
 			}
-			else
-				sum /= v[i + 1];
 		}
 		_max = max(_max, sum);
 		_min = min(_min, sum);
