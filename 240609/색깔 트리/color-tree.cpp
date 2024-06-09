@@ -35,14 +35,13 @@ bool chk_add(int pid) {
 }
 
 void add_node(int mid, int pid, int color, int max_depth) {
+	node[mid] = NODE({ mid,pid,color,max_depth,sec });
+
 	if (pid == -1) {
-		node[mid] = NODE({ mid,pid,color,max_depth,sec });
 		root_id.push_back(mid);
 		return;
 	}
 	else if (!chk_add(pid)) return;
-
-	node[mid] = NODE({ mid,pid,color,max_depth,sec });
 
 	NODE* par_node = &node[pid];
 	par_node->cid.push_back(mid);
