@@ -4,12 +4,16 @@ using namespace std;
 
 typedef pair <int, int> pii;
 
+struct COLOR {
+	int color;
+	int update_sec;
+};
+
 struct NODE {
 	int id;
 	int pid;
-	int color;
+	COLOR color;
 	int max_depth;
-	int update_sec;
 	vector <int> cid;
 };
 
@@ -35,7 +39,7 @@ bool chk_add(int pid) {
 }
 
 void add_node(int mid, int pid, int color, int max_depth) {
-	node[mid] = NODE({ mid,pid,color,max_depth,sec });
+	node[mid] = NODE({ mid,pid,{color, sec},max_depth });
 
 	if (pid == -1) {
 		root_id.push_back(mid);
@@ -49,31 +53,29 @@ void add_node(int mid, int pid, int color, int max_depth) {
 
 void change_color(int mid, int color) {
 	NODE* cur_node = &node[mid];
-	cur_node->color = color;
-	cur_node->update_sec = sec;
+	cur_node->color = { color,sec };
 	for (auto i : cur_node->cid) {
 		change_color(i, color);
 	}
 }
 
-pii get_color(int mid) {
+COLOR get_color(int mid) {
 	NODE* cur_node = &node[mid];
 	if (cur_node->pid == -1) {
-		return{ cur_node->color,0 };
+		return{ cur_node->color};
 	}
-	pii par_info = get_color(cur_node->pid);
-	if (cur_node->update_sec > par_info.second) return{ cur_node->color,cur_node->update_sec };
+	COLOR par_info = get_color(cur_node->pid);
+	if (cur_node->color.update_sec > par_info.update_sec) return cur_node->color;
 	else return par_info;
 }
 
-int dfs(int mid, int color, int update_sec) {
+int dfs(int mid, COLOR color) {
 	NODE* cur_node = &node[mid];
-	if (cur_node->update_sec < update_sec) {
+	if (cur_node->color.update_sec < color.update_sec) {
 		cur_node->color = color;
-		cur_node->update_sec = update_sec;
 	}
 
-	int chk = 1 << cur_node->color;
+	int chk = 1 << cur_node->color.color;
 
 	if (cur_node->cid.size() == 0) {
 		sum += 1;
@@ -81,7 +83,7 @@ int dfs(int mid, int color, int update_sec) {
 	}
 
 	for (auto i : cur_node->cid) {
-		chk |= dfs(i, cur_node->color, cur_node->update_sec);
+		chk |= dfs(i, cur_node->color);
 	}
 	int color_cnt = 0;
 	for (int i = 1; i <= 5; i++) {
@@ -114,12 +116,12 @@ int main() {
 			break;
 		case 300:
 			cin >> mid;
-			cout << get_color(mid).first << "\n";
+			cout << get_color(mid).color << "\n";
 			break;
 		case 400:
 			sum = 0;
 			for (auto i : root_id) {
-				dfs(i, 0, 0);
+				dfs(i, {0, 0});
 			}
 			cout << sum << "\n";
 			break;
