@@ -2,10 +2,8 @@
 
 using namespace std;
 
-typedef pair <int, int> pii;
-
 struct COLOR {
-	int color;
+	int val;
 	int update_sec;
 };
 
@@ -20,7 +18,7 @@ struct NODE {
 int Q;
 vector <NODE*> root;
 vector <int> root_id;
-NODE node[100005];
+NODE node[100001];
 int sec;
 int sum;
 
@@ -75,7 +73,7 @@ int dfs(int mid, COLOR color) {
 		cur_node->color = color;
 	}
 
-	int chk = 1 << cur_node->color.color;
+	int chk = 1 << cur_node->color.val;
 
 	if (cur_node->cid.size() == 0) {
 		sum += 1;
@@ -116,7 +114,7 @@ int main() {
 			break;
 		case 300:
 			cin >> mid;
-			cout << get_color(mid).color << "\n";
+			cout << get_color(mid).val << "\n";
 			break;
 		case 400:
 			sum = 0;
