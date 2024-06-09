@@ -2,11 +2,14 @@
 
 using namespace std;
 
+typedef pair <int, int> pii;
+
 struct NODE {
 	int id;
 	int pid;
 	int color;
 	int max_depth;
+	int update_sec;
 	vector <int> cid;
 };
 
@@ -14,6 +17,7 @@ int Q;
 vector <NODE*> root;
 vector <int> root_id;
 NODE node[100005];
+int sec;
 int sum;
 
 bool chk_add(int pid) {
@@ -32,13 +36,13 @@ bool chk_add(int pid) {
 
 void add_node(int mid, int pid, int color, int max_depth) {
 	if (pid == -1) {
-		node[mid] = NODE({ mid,pid,color,max_depth });
+		node[mid] = NODE({ mid,pid,color,max_depth,sec });
 		root_id.push_back(mid);
 		return;
 	}
 	else if (!chk_add(pid)) return;
 
-	node[mid] = NODE({ mid,pid,color,max_depth });
+	node[mid] = NODE({ mid,pid,color,max_depth,sec });
 
 	NODE* par_node = &node[pid];
 	par_node->cid.push_back(mid);
@@ -47,18 +51,34 @@ void add_node(int mid, int pid, int color, int max_depth) {
 void change_color(int mid, int color) {
 	NODE* cur_node = &node[mid];
 	cur_node->color = color;
+	cur_node->update_sec = sec;
 	for (auto i : cur_node->cid) {
 		change_color(i, color);
 	}
 }
 
-int get_color(int mid) {
-	return node[mid].color;
+pii get_color(int mid) {
+	NODE* cur_node = &node[mid];
+	if (cur_node->pid == -1) {
+		return { cur_node->color,0 };
+	}
+	pii par_info = get_color(cur_node->pid);
+	if (cur_node->update_sec > par_info.second) return{ cur_node->color,cur_node->update_sec };
+	else return par_info;
 }
 
 int dfs(int mid) {
 	NODE* cur_node = &node[mid];
+	if (cur_node->pid != -1) {
+		NODE* par_node = &node[cur_node->pid];
+		pii par_info = { par_node->color, par_node->update_sec };
+		if (cur_node->update_sec < par_info.second) {
+			cur_node->color = par_node->color;
+			cur_node->update_sec = par_node->update_sec;
+		}
+	}
 	int chk = 1 << cur_node->color;
+
 	if (cur_node->cid.size() == 0) {
 		sum += 1;
 		return chk;
@@ -85,6 +105,7 @@ int main() {
 	while (Q--) {
 		cin >> x;
 		int mid, pid, color, max_depth;
+		sec++;
 		switch (x)
 		{
 		case 100:
@@ -97,7 +118,7 @@ int main() {
 			break;
 		case 300:
 			cin >> mid;
-			cout << get_color(mid) << "\n";
+			cout << get_color(mid).first << "\n";
 			break;
 		case 400:
 			sum = 0;
