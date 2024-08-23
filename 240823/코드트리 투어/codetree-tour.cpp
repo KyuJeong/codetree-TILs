@@ -5,7 +5,7 @@ using namespace std;
 typedef pair <int, int> pii;
 
 struct Trip {
-	int r, dst, erase;
+	int r, dst, enable;
 };
 
 int srt;
@@ -19,7 +19,7 @@ int getBestTripId() {
 	int id = -1;
 	int benefit = -1;
 	for (int i = 1; i <= max_id; i++) {
-		if (trip[i].erase) continue;
+		if (!trip[i].enable) continue;
 		if (dist[trip[i].dst] == 1e9) continue;
 		int b = trip[i].r - dist[trip[i].dst];
 		if (b < 0) continue;
@@ -83,16 +83,16 @@ int main() {
 		}
 		else if (x == 200) {
 			cin >> id >> rev >> dst;
-			trip[id] = { rev, dst, false};
+			trip[id] = { rev, dst, true};
 			if (id > max_id) max_id = id;
 		}
 		else if (x == 300) {
 			cin >> id;
-			trip[id].erase = true;
+			trip[id].enable = false;
 		}
 		else if (x == 400) {
 			id = getBestTripId();
-			trip[id].erase = true;
+			trip[id].enable = false;
 			cout << id << "\n";
 		}
 		else if (x == 500) {
