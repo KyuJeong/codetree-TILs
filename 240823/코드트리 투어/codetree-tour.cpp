@@ -14,22 +14,7 @@ vector <pii> vtx[2001];
 int dist[2001];
 int max_id;
 Trip trip[30001];
-
-int getBestTripId() {
-	int id = -1;
-	int benefit = -1;
-	for (int i = 1; i <= max_id; i++) {
-		if (!trip[i].enable) continue;
-		if (dist[trip[i].dst] == 1e9) continue;
-		int b = trip[i].r - dist[trip[i].dst];
-		if (b < 0) continue;
-		if (benefit < b) {
-			id = i;
-			benefit = b;
-		}
-	}
-	return id;
-}
+priority_queue <pii> best_trip;
 
 void dijkstra() {
 	for (int i = 0; i < n; i++) {
@@ -85,19 +70,36 @@ int main() {
 			cin >> id >> rev >> dst;
 			trip[id] = { rev, dst, true};
 			if (id > max_id) max_id = id;
+			int b = rev - dist[dst];
+			if (b >= 0) best_trip.push({ b, -id });
 		}
 		else if (x == 300) {
 			cin >> id;
 			trip[id].enable = false;
 		}
 		else if (x == 400) {
-			id = getBestTripId();
-			trip[id].enable = false;
+			id = -1;
+			while (!best_trip.empty()) {
+				id = -best_trip.top().second;
+				best_trip.pop();
+				if (trip[id].enable) {
+					trip[id].enable = false;
+					break;
+				}
+				id = -1;
+			}
 			cout << id << "\n";
 		}
 		else if (x == 500) {
 			cin >> srt;
 			dijkstra();
+			best_trip = priority_queue <pii>();
+			for (int i = 1; i <= max_id; i++) {
+				if (trip[i].enable) {
+					int b = trip[i].r - dist[trip[i].dst];
+					if (b >= 0) best_trip.push({ b, -i });
+				}
+			}
 		}
 	}
 
